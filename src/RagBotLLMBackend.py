@@ -1,16 +1,17 @@
+"""RAGBot LLM Backend"""
+
 from transformers import pipeline
 from pathlib import Path
 from nicegui import ui, app
-import logging
 import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
 from langchain_community.vectorstores import FAISS
 from langchain_huggingface import HuggingFaceEmbeddings
-import src.utils as utils
+from src import utils
+
 
 # Logging setup
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+logger = utils.create_logger()
 
 
 class RagBotNotInitialisedError(Exception):
@@ -86,7 +87,9 @@ class RagBot:
             },
         ]
         self.RAG_PROMPT_TEMPLATE = self._tokenizer.apply_chat_template(
-            self._prompt_in_chat_format, tokenize=False, add_generation_prompt=True
+            self._prompt_in_chat_format,
+            tokenize=False,
+            add_generation_prompt=True,
         )
         self._initialised = True
         logger.info("RagBot successfully initialised...")
@@ -120,5 +123,7 @@ class RagBot:
         )
         # Generate answer
         answer = self.LLM(final_prompt)[0]["generated_text"]
+
+        logger.info(f"Returned a response to the query.")
 
         return answer

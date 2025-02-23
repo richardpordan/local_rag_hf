@@ -1,30 +1,32 @@
-from nicegui import ui, app
-from nicegui.events import KeyEventArguments
+"""Frontend GUI for the RAG bot"""
+
 import datetime
 import asyncio
 import logging
 import functools
+from nicegui import ui, app
+from nicegui.events import KeyEventArguments
+from src import utils
 
 
 # Logging setup
-# Logging setup
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+logger = utils.create_logger()
 
 
 class BotUI:
-    def __init__(self, rag_bot):
+    def __init__(self, rag_bot, reload_gui=False):
         app.add_static_files("/static", "static")
         ui.add_head_html(
             """<link rel="stylesheet" type="text/css" href="/static/styles.css">"""
         )
+        self.reload = reload_gui
         self._messages = [
             "Ask any question about this topic",
             "One sec, I'll think of one",
             "When you are ready, just send a message",
         ]
         self._whos = ["robot", "user", "robot"]
-        self._thinking = False
+        self._current_user_input = None
         self._bot = rag_bot
 
     def _stamp_time_now(self):
@@ -39,6 +41,8 @@ class BotUI:
             name = "User"
             avatar = "https://robohash.org/human?set=set5"
             sent = True
+        else:
+            raise ValueError("who must be one of `user` or `robot`")
         ui.chat_message(
             message,
             name=name,
@@ -57,7 +61,9 @@ class BotUI:
 
         return check
 
-    def _append_new_msg_and_refresh(self, message: str, who: str = ["user", "robot"]):
+    def _append_new_msg_and_refresh(
+        self, message: str, who: str = ["user", "robot"]
+    ):
         self._whos.append(who)
         self._messages.append(message)
         self.chat_ui.refresh()
@@ -90,7 +96,7 @@ class BotUI:
     def chat_ui(self):
         with ui.element("div").classes("container"):
             ui.label("RAGBot Chat").classes("title")
-            with ui.element("div").classes("chat-box") as chat_box:
+            with ui.element("div").classes("chat-box"):
                 for message_i, who_i in zip(self._messages, self._whos):
                     self._create_message(message=message_i, who=who_i)
             with ui.element("div").classes("input-area"):
@@ -98,7 +104,9 @@ class BotUI:
                     ui.input(
                         placeholder="Type your question here and hit enter",
                         validation={
-                            "Too short": lambda value: self._check_user_input(value)
+                            "Too short": lambda value: self._check_user_input(
+                                value
+                            )
                         },
                     )
                     .props("rounded outlined dense")
@@ -107,4 +115,4 @@ class BotUI:
                 )
 
     def run_ui(self):
-        ui.run()
+        ui.run(reload=self.reload)

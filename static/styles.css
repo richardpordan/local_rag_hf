@@ -1,0 +1,24 @@
+.container {
+    max-width: 600px !important;
+    margin: auto;
+}
+
+.title {
+    padding: 20px;
+    font-size: 24px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.chat-box {
+    height: 60vh;
+    overflow: auto;
+}
+
+.input-area {
+    padding: 20px;
+    position: relative;
+}
+
+.input-box {
+    margin: auto;
+}

@@ -29,7 +29,7 @@ class RagBot:
         self.EMBEDDING_MODEL_NAME = self._config["embedding_model_name"]
         self.DEVICE = self._config["device"]
         self.CHAT_MODEL_NAME = self._config["chat_model_name"]
-        self.k = self._config['query']['k']
+        self.k = self._config["query"]["k"]
 
     def initialise(self):
         logger.info("Initialising Ragbot...")
@@ -102,7 +102,7 @@ class RagBot:
         # Embed query and perform similarity search
         query_vector = self._embedding_model.embed_query(user_query)
         retrieved_docs = self.KNOWLEDGE_VECTOR_DATABASE.similarity_search(
-            query=user_query, self.k=5
+            query=user_query, k=self.k
         )
         # Filter to the text only
         retrieved_docs_text = [doc.page_content for doc in retrieved_docs]
@@ -122,6 +122,7 @@ class RagBot:
         answer = self.LLM(final_prompt)[0]["generated_text"]
 
         return answer
+
 
 if __name__ == "__main__":
     # Create RagBot instance

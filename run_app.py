@@ -11,6 +11,6 @@ if __name__ == "__main__":
     RagBot_instance = RagBot("config.yml")
     RagBot_instance.initialise()
     # Run UI
-    bot_ui_instance = BotUI(rag_bot = RagBot_instance)
+    bot_ui_instance = BotUI(rag_bot=RagBot_instance)
     bot_ui_instance.chat_ui()
     bot_ui_instance.run_ui()

@@ -65,19 +65,12 @@ class BotUI:
         input_value = self._current_user_input.value
         if len(input_value) >= 5:
             self._current_user_input.set_value(None)
+            self._append_new_msg_and_refresh(message=input_value, who="user")
             self._append_new_msg_and_refresh(
-                message = input_value,
-                who = "user"
-            )
-            self._append_new_msg_and_refresh(
-                message = "Just a minute, let me think...",
-                who = "robot"
+                message="Just a minute, let me think...", who="robot"
             )
             response = self._bot.query(input_value)
-            self._append_new_msg_and_refresh(
-                message = response,
-                who = "robot"
-            )
+            self._append_new_msg_and_refresh(message=response, who="robot")
         else:
             ui.notify(rf"'{input_value}' is not long enough.")
 
@@ -100,6 +93,7 @@ class BotUI:
                     .classes("input-box")
                     .on("keydown.enter", self._get_answer_and_update_chat)
                 )
+
     def run_ui(self):
         ui.run()
 

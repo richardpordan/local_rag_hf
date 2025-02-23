@@ -1,5 +1,5 @@
 import logging
-from src.RagBot import RagBot
+from src.RagBotLLMBackend import RagBot
 from src.RagBotFrontend import BotUI
 
 

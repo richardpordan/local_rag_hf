@@ -3,7 +3,7 @@ from src.RagBotLLMBackend import RagBot
 from src.RagBotFrontend import BotUI
 
 
-if __name__ == "__main__":
+if __name__ in {"__main__", "__mp_main__"}:
     # Logging setup
     logging.basicConfig(level=logging.INFO)
     logger = logging.getLogger(__name__)

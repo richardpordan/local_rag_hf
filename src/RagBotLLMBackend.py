@@ -4,7 +4,7 @@ from nicegui import ui, app
 import logging
 import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
-from langchain.vectorstores import FAISS
+from langchain_community.vectorstores import FAISS
 from langchain_huggingface import HuggingFaceEmbeddings
 import src.utils as utils
 
@@ -122,11 +122,3 @@ class RagBot:
         answer = self.LLM(final_prompt)[0]["generated_text"]
 
         return answer
-
-
-if __name__ == "__main__":
-    # Create RagBot instance
-    RagBot_instance = RagBot("config.yml")
-    RagBot_instance.initialise()
-    # Test
-    RagBot_instance.query("How to build a pipeline?")

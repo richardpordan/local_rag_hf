@@ -3,6 +3,7 @@ from nicegui.events import KeyEventArguments
 import datetime
 import asyncio
 import logging
+import functools
 
 
 # Logging setup
@@ -61,16 +62,27 @@ class BotUI:
         self._messages.append(message)
         self.chat_ui.refresh()
 
-    def _get_answer_and_update_chat(self):
+    async def _get_answer_and_update_chat(self):
+        logger.info("Getting answer and updating chat...")
         input_value = self._current_user_input.value
         if len(input_value) >= 5:
             self._current_user_input.set_value(None)
+            self._current_user_input.disable()
             self._append_new_msg_and_refresh(message=input_value, who="user")
             self._append_new_msg_and_refresh(
                 message="Just a minute, let me think...", who="robot"
             )
-            response = self._bot.query(input_value)
+            # Run this bit async, otherwise will kill the GUI
+            # Get the current event loop
+            loop = asyncio.get_running_loop()
+            # Run the blocking function in a thread pool and get a Future object
+            future = loop.run_in_executor(
+                None, functools.partial(self._bot.query, user_query=input_value)
+            )
+            # Wait for the Future object to complete and get the result
+            response = await future
             self._append_new_msg_and_refresh(message=response, who="robot")
+            self._current_user_input.enable()
         else:
             ui.notify(rf"'{input_value}' is not long enough.")
 
@@ -96,9 +108,3 @@ class BotUI:
 
     def run_ui(self):
         ui.run()
-
-
-if __name__ in {"__main__", "__mp_main__"}:
-    bot_ui_instance = BotUI()
-    bot_ui_instance.chat_ui()
-    bot_ui_instance.run_ui()
